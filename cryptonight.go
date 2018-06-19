@@ -20,6 +20,7 @@
 package cryptonight
 
 /*
+#cgo amd64 CFLAGS: -maes
 #include "cryptonight.h"
 #include <stdlib.h>
 */
@@ -38,6 +39,8 @@ import (
 	"github.com/webchain-network/webchaind/logger"
 	"github.com/webchain-network/webchaind/logger/glog"
 	"github.com/webchain-network/webchaind/pow"
+
+	"github.com/klauspost/cpuid"
 )
 
 var (
@@ -114,7 +117,11 @@ func (pow *Cryptonight) compute(ctx unsafe.Pointer, blockBytes []byte, nonce uin
 
 	var in unsafe.Pointer = C.CBytes(blockBytes)
 	var out unsafe.Pointer = C.malloc(common.HashLength)
-	C.cryptonight_hash(ctx, (*C.char)(in), (*C.char)(out), C.uint32_t(len(blockBytes)))
+	if cpuid.CPU.AesNi() {
+		C.cryptonight_hash_aesni(ctx, (*C.char)(in), (*C.char)(out), C.uint32_t(len(blockBytes)))
+	} else {
+		C.cryptonight_hash(ctx, (*C.char)(in), (*C.char)(out), C.uint32_t(len(blockBytes)))
+	}
 
 	var hash common.Hash = bytesToHash(unsafe.Pointer(out))
 
