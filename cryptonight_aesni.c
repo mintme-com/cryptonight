@@ -117,9 +117,10 @@ void cryptonight_hash_aesni(void *ctx2, const char *input, char *output, uint32_
     longoutput = (__m128i *) ctx->long_state;
     expkey = (__m128i *) ExpandedKey;
     xmminput = (__m128i *) ctx->text;
+    int i, j;
 
-    for (int i = 0; __builtin_expect(i < 0x4000, 1); ++i) {
-        for (int j = 0; j < 10; j++) {
+    for (i = 0; __builtin_expect(i < 0x4000, 1); ++i) {
+        for (j = 0; j < 10; j++) {
             xmminput[0] = _mm_aesenc_si128(xmminput[0], expkey[j]);
             xmminput[1] = _mm_aesenc_si128(xmminput[1], expkey[j]);
             xmminput[2] = _mm_aesenc_si128(xmminput[2], expkey[j]);
@@ -139,7 +140,7 @@ void cryptonight_hash_aesni(void *ctx2, const char *input, char *output, uint32_
         _mm_store_si128(&(longoutput[(i << 3) + 7]), xmminput[7]);
     }
 
-    for (int i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++) {
         ctx->a[i] = ((uint64_t *) ctx->state.k)[i] ^ ((uint64_t *) ctx->state.k)[i + 4];
         ctx->b[i] = ((uint64_t *) ctx->state.k)[i + 2] ^ ((uint64_t *) ctx->state.k)[i + 6];
     }
@@ -149,7 +150,7 @@ void cryptonight_hash_aesni(void *ctx2, const char *input, char *output, uint32_
     a[0] = ctx->a[0];
     a[1] = ctx->a[1];
 
-    for (int i = 0; __builtin_expect(i < 0x80000, 1); i++) {
+    for (i = 0; __builtin_expect(i < 0x80000, 1); i++) {
         __m128i c_x = _mm_load_si128((__m128i * ) & ctx->long_state[a[0] & 0x1FFFF0]);
         __m128i a_x = _mm_load_si128((__m128i *) a);
         uint64_t c[2];
@@ -202,7 +203,7 @@ void cryptonight_hash_aesni(void *ctx2, const char *input, char *output, uint32_
     //for (i = 0; likely(i < MEMORY); i += INIT_SIZE_BYTE)
     //    aesni_parallel_xor(&ctx->text, ExpandedKey, &ctx->long_state[i]);
 
-    for (int i = 0; __builtin_expect(i < 0x4000, 1); ++i) {
+    for (i = 0; __builtin_expect(i < 0x4000, 1); ++i) {
         xmminput[0] = _mm_xor_si128(longoutput[(i << 3)], xmminput[0]);
         xmminput[1] = _mm_xor_si128(longoutput[(i << 3) + 1], xmminput[1]);
         xmminput[2] = _mm_xor_si128(longoutput[(i << 3) + 2], xmminput[2]);
@@ -212,7 +213,7 @@ void cryptonight_hash_aesni(void *ctx2, const char *input, char *output, uint32_
         xmminput[6] = _mm_xor_si128(longoutput[(i << 3) + 6], xmminput[6]);
         xmminput[7] = _mm_xor_si128(longoutput[(i << 3) + 7], xmminput[7]);
 
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             xmminput[0] = _mm_aesenc_si128(xmminput[0], expkey[j]);
             xmminput[1] = _mm_aesenc_si128(xmminput[1], expkey[j]);
             xmminput[2] = _mm_aesenc_si128(xmminput[2], expkey[j]);
