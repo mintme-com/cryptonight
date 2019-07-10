@@ -23,6 +23,7 @@ package cryptonight
 // LYRA2 implementation.
 
 /*
+#cgo CFLAGS: -std=gnu99
 #cgo amd64 CFLAGS: -maes
 #include "cryptonight.h"
 #include "Lyra2.h"
