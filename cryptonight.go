@@ -45,7 +45,7 @@ import (
 	"github.com/webchain-network/webchaind/logger/glog"
 	"github.com/webchain-network/webchaind/pow"
 
-	"github.com/klauspost/cpuid"
+	"github.com/mintme-com/cpuid"
 )
 
 var (
